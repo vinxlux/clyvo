@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'expo-router';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MetricCard from '../components/MetricCard';
 import PetPreviewCard from '../components/PetPreviewCard';
 import PetsManager from '../components/PetsManager';
@@ -13,7 +14,17 @@ import PetCard from '../components/PetCard';
 // removed programmatic redirect to avoid routing conflicts; auth handled by layout
 
 export default function Index() {
-  const router = useRouter();
+  // Load useRouter dynamically only on web to avoid importing expo-router on native
+  let router: any = null;
+  if (Platform.OS === 'web') {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { useRouter } = require('expo-router');
+      router = useRouter();
+    } catch (e) {
+      // ignore - router won't be available
+    }
+  }
   const [manage, setManage] = useState(false);
   const [pets, setPets] = useState<Pet[]>([]);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
@@ -38,41 +49,45 @@ export default function Index() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <View style={{ padding: 20 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={styles.title}>Pets</Text>
           <TouchableOpacity onPress={() => setManage(m => !m)} style={styles.manageBtn}>
             <Text style={styles.manageText}>{manage ? 'Fechar' : 'Gerenciar Pets'}</Text>
           </TouchableOpacity>
         </View>
+      </View>
 
-        {manage ? (
+      {manage ? (
+        // PetsManager contains a FlatList; do not wrap it in a ScrollView
+        <View style={{ flex: 1, paddingHorizontal: 20 }}>
           <PetsManager />
-        ) : (
-          <>
-            <View>
-              {pets.map(p => (
-                <TouchableOpacity key={p.id} onPress={() => setSelectedPet(p)} activeOpacity={0.9}>
-                  <PetCard pet={p} onPress={() => setSelectedPet(p)} />
-                </TouchableOpacity>
-              ))}
-            </View>
+        </View>
+      ) : (
+        // Non-manager view: use a ScrollView for static content
+        <ScrollView contentContainerStyle={styles.container}>
+          <View>
+            {pets.map(p => (
+              <TouchableOpacity key={p.id} onPress={() => setSelectedPet(p)} activeOpacity={0.9}>
+                <PetCard pet={p} onPress={() => setSelectedPet(p)} />
+              </TouchableOpacity>
+            ))}
+          </View>
 
-            {selectedPet ? (
-              <PetPreviewCard
-                data={{
-                  nome: selectedPet.nome,
-                  raca: selectedPet.raca,
-                  especie: selectedPet.especie,
-                  idade: String(selectedPet.idade),
-                  peso: String(selectedPet.peso),
-                  observacoes: selectedPet.observacoes || '',
-                }}
-              />
-            ) : null}
-          </>
-        )}
-      </ScrollView>
+          {selectedPet ? (
+            <PetPreviewCard
+              data={{
+                nome: selectedPet.nome,
+                raca: selectedPet.raca,
+                especie: selectedPet.especie,
+                idade: String(selectedPet.idade),
+                peso: String(selectedPet.peso),
+                observacoes: selectedPet.observacoes || '',
+              }}
+            />
+          ) : null}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }

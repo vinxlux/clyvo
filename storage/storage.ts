@@ -252,6 +252,36 @@ export async function adicionarAtividade(atividade: Atividade): Promise<void> {
   }
 }
 
+// Atualizar atividade existente
+export async function atualizarAtividade(atividade: Atividade): Promise<void> {
+  try {
+    const atividades = await carregarAtividades();
+    const idx = atividades.findIndex(a => a.id === atividade.id);
+    if (idx !== -1) {
+      atividades[idx] = atividade;
+      await salvarAtividades(atividades);
+    } else {
+      atividades.push(atividade);
+      await salvarAtividades(atividades);
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar atividade:', error);
+  }
+}
+
+// Excluir atividade por ID
+export async function excluirAtividade(id: string): Promise<Atividade[]> {
+  try {
+    const atividades = await carregarAtividades();
+    const novos = atividades.filter(a => a.id !== id);
+    await salvarAtividades(novos);
+    return novos;
+  } catch (error) {
+    console.error('Erro ao excluir atividade:', error);
+    return [];
+  }
+}
+
 // Limpa todas as atividades
 export async function limparAtividades(): Promise<Atividade[]> {
   try {
@@ -333,7 +363,7 @@ export async function listarUsuariosDetalhado(): Promise<string[]> {
     if (single) {
       out.push(`usuario global: ${single}`);
     }
-    const allKeys = await AsyncStorage.getAllKeys();
+    const allKeys = (await AsyncStorage.getAllKeys()) || [];
     out.push(`total keys: ${allKeys.length}`);
     return out.length ? out : ['nenhum usuário encontrado'];
   } catch (e) {

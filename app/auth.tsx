@@ -90,8 +90,8 @@ export default function AuthScreen() {
 
   const handleDumpStorage = async () => {
     try {
-      const keys = await AsyncStorage.getAllKeys();
-      const pairs = await AsyncStorage.multiGet(keys);
+      const keys = (await AsyncStorage.getAllKeys()) || [];
+      const pairs = keys.length ? await AsyncStorage.multiGet(keys) : [];
       const formatted = pairs.map(p => ({ k: p[0], v: p[1] }));
       setDumpData(formatted);
       console.log('dumpStorage:', formatted);

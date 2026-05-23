@@ -14,8 +14,12 @@ export default class ErrorBoundary extends React.Component<React.PropsWithChildr
   }
 
   componentDidCatch(error: Error) {
-    // You can log the error to an error reporting service here
-    // console.error(error);
+    // Log full error and stack for debugging
+    try {
+      console.error('ErrorBoundary caught:', error, '\nstack:', (error as any)?.stack);
+    } catch (e) {
+      // ignore logging failures
+    }
     // If this is the known expo-router web issue, mark it so App can render a web fallback
     try {
       if (Platform.OS === 'web' && typeof window !== 'undefined' && error?.message?.includes('contextModule')) {
