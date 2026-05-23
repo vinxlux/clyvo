@@ -41,7 +41,7 @@ export default function Cadastro() {
       Alert.alert('Erro', 'Nome é obrigatório');
       return;
     }
-    // criar pet e salvar
+    // create pet and save
     if (id) {
       await atualizarPet({
         id: String(id),

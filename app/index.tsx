@@ -39,7 +39,7 @@ export default function Index() {
 
   useEffect(() => {
     (async () => {
-      // A navegação de autenticação é tratada no _layout.tsx
+      // Authentication navigation is handled in _layout.tsx
       await inicializarDados();
       const p = await carregarPets();
       setPets(p);

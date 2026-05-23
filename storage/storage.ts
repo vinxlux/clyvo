@@ -1,8 +1,8 @@
-// Utilitário de persistência com AsyncStorage
+// AsyncStorage persistence utility
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Pet, Atividade, Usuario } from '../types';
 
-// Chaves do AsyncStorage (base keys)
+// AsyncStorage keys (base keys)
 const KEYS = {
   PETS: '@clyvo:pets', // will be suffixed with :<email>
   ATIVIDADES: '@clyvo:atividades', // will be suffixed with :<email>
@@ -34,7 +34,7 @@ const petsMock: Pet[] = [
 ];
 const atividadesMock: Atividade[] = [];
 
-// Inicializar dados na primeira execução
+// Initialize data on first run
 console.log('📦 storage.ts carregado');
 export async function inicializarDados(): Promise<void> {
   try {
@@ -59,7 +59,7 @@ export async function inicializarDados(): Promise<void> {
   }
 }
 
-// Helper: email do usuário logado
+// Helper: logged-in user email
 async function getLoggedInEmail(): Promise<string | null> {
   try {
     const email = await AsyncStorage.getItem('@clyvo:userEmail');
@@ -70,7 +70,7 @@ async function getLoggedInEmail(): Promise<string | null> {
   }
 }
 
-// Helper: keys por usuário (se não houver email, usa a chave base)
+// Helper: per-user keys (falls back to the base key when no email is available)
 async function petsKeyForCurrentUser(): Promise<string> {
   const email = await getLoggedInEmail();
   return email ? `${KEYS.PETS}:${email}` : KEYS.PETS;
@@ -86,7 +86,7 @@ async function usuarioKeyForCurrentUser(): Promise<string> {
   return email ? `${KEYS.USUARIO}:${email}` : KEYS.USUARIO;
 }
 
-// Retorna imagem placeholder por espécie
+// Returns a placeholder image based on species
 export function getFotoPorEspecie(especie: 'cachorro' | 'gato'): string {
   if (especie === 'gato') return 'https://placekitten.com/300/300';
   return 'https://placedog.net/300/300';
@@ -94,7 +94,7 @@ export function getFotoPorEspecie(especie: 'cachorro' | 'gato'): string {
 
 // ==================== PETS ====================
 
-// Salvar lista de pets
+// Save the pet list
 export async function salvarPets(pets: Pet[]): Promise<void> {
   try {
     const key = await petsKeyForCurrentUser();
@@ -104,7 +104,7 @@ export async function salvarPets(pets: Pet[]): Promise<void> {
   }
 }
 
-// Carregar pets
+// Load pets
 export async function carregarPets(): Promise<Pet[]> {
   try {
     const key = await petsKeyForCurrentUser();
@@ -121,13 +121,13 @@ export async function carregarPets(): Promise<Pet[]> {
   }
 }
 
-// Adicionar um novo pet
+// Add a new pet
 export async function adicionarPet(pet: Pet): Promise<void> {
   try {
     const pets = await carregarPets();
     pets.push(pet);
     await salvarPets(pets);
-    // Se for o primeiro pet, atualiza o usuário para apontar para o pet principal
+    // If this is the first pet, update the user to point to the main pet
     try {
       const usuarioKey = await usuarioKeyForCurrentUser();
       const usuarioRaw = await AsyncStorage.getItem(usuarioKey);
@@ -153,7 +153,7 @@ export async function adicionarPet(pet: Pet): Promise<void> {
   }
 }
 
-// Atualizar pet existente
+// Update an existing pet
 export async function atualizarPet(pet: Pet): Promise<void> {
   try {
     const pets = await carregarPets();
@@ -162,7 +162,7 @@ export async function atualizarPet(pet: Pet): Promise<void> {
       pets[idx] = pet;
       await salvarPets(pets);
     } else {
-      // se não existe, adiciona como novo
+      // If it does not exist, add it as new
       pets.push(pet);
       await salvarPets(pets);
     }
@@ -171,7 +171,7 @@ export async function atualizarPet(pet: Pet): Promise<void> {
   }
 }
 
-// Excluir pet por ID
+// Delete pet by ID
 export async function excluirPet(id: string): Promise<Pet[]> {
   try {
     const pets = await carregarPets();
@@ -184,7 +184,7 @@ export async function excluirPet(id: string): Promise<Pet[]> {
   }
 }
 
-// Buscar pet por ID
+// Find pet by ID
 export async function buscarPetPorId(id: string): Promise<Pet | null> {
   try {
     const pets = await carregarPets();
@@ -197,7 +197,7 @@ export async function buscarPetPorId(id: string): Promise<Pet | null> {
 
 // ==================== ATIVIDADES ====================
 
-// Salvar atividades
+// Save activities
 export async function salvarAtividades(atividades: Atividade[]): Promise<void> {
   try {
     const key = await atividadesKeyForCurrentUser();
@@ -208,7 +208,7 @@ export async function salvarAtividades(atividades: Atividade[]): Promise<void> {
   }
 }
 
-// Carregar atividades
+// Load activities
 export async function carregarAtividades(): Promise<Atividade[]> {
   try {
     const key = await atividadesKeyForCurrentUser();
@@ -225,7 +225,7 @@ export async function carregarAtividades(): Promise<Atividade[]> {
   }
 }
 
-// Alternar status de atividade (concluída/pendente)
+// Toggle activity status (completed/pending)
 export async function alternarAtividade(id: string): Promise<Atividade[]> {
   try {
     const atividades = await carregarAtividades();
@@ -241,7 +241,7 @@ export async function alternarAtividade(id: string): Promise<Atividade[]> {
   }
 }
 
-// Adicionar atividade
+// Add an activity
 export async function adicionarAtividade(atividade: Atividade): Promise<void> {
   try {
     const atividades = await carregarAtividades();
@@ -252,7 +252,7 @@ export async function adicionarAtividade(atividade: Atividade): Promise<void> {
   }
 }
 
-// Atualizar atividade existente
+// Update an existing activity
 export async function atualizarAtividade(atividade: Atividade): Promise<void> {
   try {
     const atividades = await carregarAtividades();
@@ -269,7 +269,7 @@ export async function atualizarAtividade(atividade: Atividade): Promise<void> {
   }
 }
 
-// Excluir atividade por ID
+// Delete activity by ID
 export async function excluirAtividade(id: string): Promise<Atividade[]> {
   try {
     const atividades = await carregarAtividades();
@@ -282,7 +282,7 @@ export async function excluirAtividade(id: string): Promise<Atividade[]> {
   }
 }
 
-// Limpa todas as atividades
+// Clear all activities
 export async function limparAtividades(): Promise<Atividade[]> {
   try {
     const key = await atividadesKeyForCurrentUser();
@@ -298,9 +298,9 @@ export async function limparAtividades(): Promise<Atividade[]> {
   }
 }
 
-// ==================== USUARIO ====================
+// ==================== USER ====================
 
-// Carregar usuário
+// Load user
 // ---- AUTH USER HANDLING ----
 export interface AuthUser {
   nome: string;
@@ -337,7 +337,7 @@ export async function buscarUsuario(email: string): Promise<AuthUser | null> {
   }
 }
 
-// Retorna todos os usuários salvos (útil para debug)
+// Return all saved users (useful for debugging)
 export async function listarUsuarios(): Promise<AuthUser[]> {
   try {
     const dados = await AsyncStorage.getItem(USERS_KEY);
@@ -350,7 +350,7 @@ export async function listarUsuarios(): Promise<AuthUser[]> {
   }
 }
 
-// Lista usuários de forma mais ampla (para debug): tenta USERS_KEY e também verifica se há um usuário único em KEYS.USUARIO
+// List users more broadly (for debug): tries USERS_KEY and also checks for a single user in KEYS.USUARIO
 export async function listarUsuariosDetalhado(): Promise<string[]> {
   const out: string[] = [];
   try {
@@ -372,9 +372,9 @@ export async function listarUsuariosDetalhado(): Promise<string[]> {
   }
 }
 
-// Apaga todos os usuários salvos (lista de logins)
+// Delete all saved users (login list)
 export async function apagarTodosUsuarios(): Promise<void> {
-  // função desativada por solicitação do desenvolvedor — não realiza remoção
+  // This function is disabled at the developer's request — it does not remove anything
   try {
     console.log('apagarTodosUsuarios: desativada (nenhuma ação executada)');
   } catch (error) {
@@ -382,9 +382,9 @@ export async function apagarTodosUsuarios(): Promise<void> {
   }
 }
 
-// Apaga todos os usuários e também os dados associados a cada conta (pets, atividades, usuario)
+// Delete all users and their associated data (pets, activities, and user)
 export async function apagarTodosUsuariosComDados(): Promise<string[]> {
-  // função de limpeza completa desativada — retorna log curto informando desativação
+  // Full cleanup is disabled — returns a short log indicating deactivation
   return ['apagarTodosUsuariosComDados: funcionalidade desativada pelo desenvolvedor'];
 }
 
@@ -406,7 +406,7 @@ export async function carregarUsuario(): Promise<Usuario> {
   }
 }
 
-// Define pet principal por espécie
+// Set the main pet for each species
 export async function setPetPrincipal(especie: 'cachorro' | 'gato', id: string): Promise<void> {
   try {
     const key = await usuarioKeyForCurrentUser();

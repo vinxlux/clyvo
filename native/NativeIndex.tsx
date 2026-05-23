@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { salvarUsuario, buscarUsuario, carregarUsuario, carregarPets, carregarAtividades, alternarAtividade, adicionarPet } from '../storage/storage';
+import { salvarUsuario, buscarUsuario, carregarUsuario, carregarPets, carregarAtividades, alternarAtividade, adicionarPet, atualizarAtividade, excluirAtividade, setPetPrincipal, adicionarAtividade } from '../storage/storage';
 import { Pet, Usuario, Atividade } from '../types';
 import PetCard from '../components/PetCard';
 import AtividadeItem from '../components/AtividadeItem';
 import { Colors } from '../constants/colors';
 import NativeCadastro from './NativeCadastro';
+import NativeAtividadeEditor from './NativeAtividadeEditor';
 
 export default function NativeIndex() {
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
@@ -39,7 +40,8 @@ export default function NativeIndex() {
         const p = await carregarPets();
         setPets(p);
         const a = await carregarAtividades();
-        setAtividades(a.filter(it => it.data === new Date().toISOString().split('T')[0]));
+        const today = new Date().toISOString().split('T')[0];
+        setAtividades(a.filter(it => it.data >= today).sort((a, b) => a.data.localeCompare(b.data)));
       } catch (e) {
         console.error('NativeIndex: erro ao carregar dados', e);
       }
@@ -76,6 +78,7 @@ export default function NativeIndex() {
   async function doLogout() {
     await AsyncStorage.removeItem('@clyvo:loggedIn');
     setLoggedIn(false);
+    setScreen('login');
     setUsuario(null);
     setPets([]);
     setAtividades([]);
@@ -83,12 +86,70 @@ export default function NativeIndex() {
 
   async function handleToggle(id: string) {
     const novos = await alternarAtividade(id);
-    setAtividades(novos.filter(it => it.data === new Date().toISOString().split('T')[0]));
+    const today = new Date().toISOString().split('T')[0];
+    setAtividades(novos.filter(it => it.data >= today).sort((a, b) => a.data.localeCompare(b.data)));
+  }
+
+  async function refreshActivities() {
+    const a = await carregarAtividades();
+    const today = new Date().toISOString().split('T')[0];
+    setAtividades(a.filter(it => it.data >= today).sort((a, b) => a.data.localeCompare(b.data)));
   }
 
   // Minimal add pet for native fallback (keeps behavior similar to web)
-  // Local screen navigation: 'home' | 'cadastro'
-  const [screen, setScreen] = useState<'home' | 'cadastro'>('home');
+  // Local screen navigation: 'login' | 'register' | 'home' | 'cadastro' | 'atividadeEditor'
+  const [screen, setScreen] = useState<'login' | 'register' | 'home' | 'cadastro' | 'atividadeEditor'>('login');
+  const [editingPet, setEditingPet] = useState<Pet | null>(null);
+  const [editingActivity, setEditingActivity] = useState<Atividade | null>(null);
+  const [activityForm, setActivityForm] = useState({
+    petId: '',
+    titulo: '',
+    tipo: 'exercicio' as Atividade['tipo'],
+    horario: '',
+    data: new Date().toISOString().split('T')[0],
+  });
+
+  async function handleAddActivity() {
+    if (!activityForm.petId) {
+      Alert.alert('Erro', 'Selecione um pet');
+      return;
+    }
+
+    if (!activityForm.titulo.trim()) {
+      Alert.alert('Erro', 'Título é obrigatório');
+      return;
+    }
+
+    if (!activityForm.horario.trim()) {
+      Alert.alert('Erro', 'Horário é obrigatório');
+      return;
+    }
+
+    const parsedDate = new Date(activityForm.data);
+    if (Number.isNaN(parsedDate.getTime())) {
+      Alert.alert('Erro', 'Data inválida. Use o formato YYYY-MM-DD');
+      return;
+    }
+
+    await adicionarAtividade({
+      id: Date.now().toString(),
+      petId: activityForm.petId,
+      titulo: activityForm.titulo.trim(),
+      tipo: activityForm.tipo,
+      horario: activityForm.horario.trim(),
+      concluida: false,
+      data: activityForm.data,
+    });
+
+    setActivityForm({
+      petId: '',
+      titulo: '',
+      tipo: 'exercicio',
+      horario: '',
+      data: new Date().toISOString().split('T')[0],
+    });
+    await refreshActivities();
+  }
 
   async function handleAddPetQuick() {
     const novo: Pet = {
@@ -139,10 +200,65 @@ export default function NativeIndex() {
   const petPrincipalCachorro = pets.find(p => usuario && p.id === usuario.petPrincipalCachorroId && p.especie === 'cachorro') || pets.find(p => p.especie === 'cachorro') || null;
   const petPrincipalGato = pets.find(p => usuario && p.id === usuario.petPrincipalGatoId && p.especie === 'gato') || pets.find(p => p.especie === 'gato') || null;
 
+  async function handleEditPet(pet: Pet) {
+    setEditingPet(pet);
+    setScreen('cadastro');
+  }
+
+  async function handleEditActivity(id: string) {
+    const atividade = atividades.find(item => item.id === id);
+    if (!atividade) {
+      Alert.alert('Erro', 'Atividade não encontrada');
+      return;
+    }
+
+    setEditingActivity(atividade);
+    setScreen('atividadeEditor');
+  }
+
   if (screen === 'cadastro') {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <NativeCadastro onDone={async () => { const p = await carregarPets(); setPets(p); setScreen('home'); }} onCancel={() => setScreen('home')} />
+        <NativeCadastro
+          pet={editingPet || undefined}
+          onDone={async () => {
+            const p = await carregarPets();
+            setPets(p);
+            setEditingPet(null);
+            setScreen('home');
+          }}
+          onCancel={() => {
+            setEditingPet(null);
+            setScreen('home');
+          }}
+        />
+      </SafeAreaView>
+    );
+  }
+
+  if (screen === 'atividadeEditor' && editingActivity) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <NativeAtividadeEditor
+          atividade={editingActivity}
+          pets={pets}
+          onDone={async (updated) => {
+            await atualizarAtividade(updated);
+            await refreshActivities();
+            setEditingActivity(null);
+            setScreen('home');
+          }}
+          onCancel={() => {
+            setEditingActivity(null);
+            setScreen('home');
+          }}
+          onDelete={async (id) => {
+            await excluirAtividade(id);
+            await refreshActivities();
+            setEditingActivity(null);
+            setScreen('home');
+          }}
+        />
       </SafeAreaView>
     );
   }
@@ -170,12 +286,64 @@ export default function NativeIndex() {
         ) : null}
 
         <Text style={[styles.sectionTitle, { marginTop: 12 }]}>Próximas atividades</Text>
+        <View style={{ marginBottom: 12, padding: 12, borderRadius: 16, backgroundColor: Colors.surface }}>
+          <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 8 }}>Adicionar nova atividade</Text>
+          <Text style={{ marginBottom: 6 }}>Selecione o pet:</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+            {pets.map(p => (
+              <TouchableOpacity
+                key={p.id}
+                onPress={() => setActivityForm(prev => ({ ...prev, petId: p.id }))}
+                style={[styles.activityChip, activityForm.petId === p.id && styles.activityChipActive]}
+              >
+                <Text style={[styles.activityChipText, activityForm.petId === p.id && styles.activityChipTextActive]}>{p.nome}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TextInput
+            placeholder="Título"
+            value={activityForm.titulo}
+            onChangeText={t => setActivityForm(prev => ({ ...prev, titulo: t }))}
+            style={styles.activityInput}
+          />
+          <TextInput
+            placeholder="Horário (ex: 08:00)"
+            value={activityForm.horario}
+            onChangeText={t => setActivityForm(prev => ({ ...prev, horario: t }))}
+            style={styles.activityInput}
+          />
+          <TextInput
+            placeholder="Data (YYYY-MM-DD)"
+            value={activityForm.data}
+            onChangeText={t => setActivityForm(prev => ({ ...prev, data: t }))}
+            style={styles.activityInput}
+            autoCapitalize="none"
+          />
+
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+            {(['exercicio', 'alimentacao', 'saude', 'higiene'] as Atividade['tipo'][]).map(tipo => (
+              <TouchableOpacity
+                key={tipo}
+                onPress={() => setActivityForm(prev => ({ ...prev, tipo }))}
+                style={[styles.activityChip, activityForm.tipo === tipo && styles.activityChipActive]}
+              >
+                <Text style={[styles.activityChipText, activityForm.tipo === tipo && styles.activityChipTextActive]}>{tipo}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity style={{ backgroundColor: Colors.accent, padding: 12, borderRadius: 10, alignItems: 'center' }} onPress={handleAddActivity}>
+            <Text style={{ color: '#fff', fontWeight: '700' }}>Adicionar atividade</Text>
+          </TouchableOpacity>
+        </View>
+
         {atividades.length === 0 ? (
-          <Text style={{ color: Colors.textSecondary, fontStyle: 'italic' }}>Nenhuma atividade para hoje</Text>
+          <Text style={{ color: Colors.textSecondary, fontStyle: 'italic' }}>Nenhuma atividade para as próximas datas</Text>
         ) : (
           atividades.map(a => {
             const pet = pets.find(p => p.id === a.petId);
-            return <AtividadeItem key={a.id} atividade={a} onToggle={handleToggle} petName={pet ? pet.nome : ''} />;
+            return <AtividadeItem key={a.id} atividade={a} onToggle={handleToggle} onEdit={handleEditActivity} petName={pet ? pet.nome : ''} />;
           })
         )}
 
@@ -183,11 +351,27 @@ export default function NativeIndex() {
         {pets.map(p => (
           <View key={p.id} style={{ marginBottom: 12 }}>
             <PetCard pet={p} onPress={() => {}} />
+            <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+              <TouchableOpacity style={{ backgroundColor: Colors.background, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10, flex: 1, alignItems: 'center' }} onPress={() => handleEditPet(p)}>
+                <Text style={{ color: Colors.primary, fontWeight: '700' }}>Editar Pet</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ backgroundColor: Colors.primaryLight, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10, flex: 1, alignItems: 'center' }}
+                onPress={async () => {
+                  await setPetPrincipal(p.especie, p.id);
+                  const u = await carregarUsuario();
+                  setUsuario(u);
+                  Alert.alert('Pronto', `Definido como principal (${p.especie})`);
+                }}
+              >
+                <Text style={{ color: Colors.primary, fontWeight: '700' }}>Definir principal</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ))}
 
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
-          <TouchableOpacity style={{ backgroundColor: Colors.accent, padding: 12, borderRadius: 10, flex: 1, alignItems: 'center' }} onPress={() => setScreen('cadastro')}>
+          <TouchableOpacity style={{ backgroundColor: Colors.accent, padding: 12, borderRadius: 10, flex: 1, alignItems: 'center' }} onPress={() => { setEditingPet(null); setScreen('cadastro'); }}>
             <Text style={{ color: '#fff', fontWeight: '700' }}>Cadastrar Pet</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ backgroundColor: Colors.primary, padding: 12, borderRadius: 10, flex: 1, alignItems: 'center' }} onPress={handleAddPetQuick}>
@@ -203,4 +387,9 @@ const styles = StyleSheet.create({
   input: { width: '100%', backgroundColor: Colors.surface, padding: 12, borderRadius: 10, marginBottom: 12, borderWidth: 1, borderColor: Colors.border },
   btn: { backgroundColor: Colors.primary, padding: 12, borderRadius: 10, width: '100%', alignItems: 'center' },
   sectionTitle: { fontSize: 16, fontWeight: '700', marginTop: 12, marginBottom: 8 },
+  activityInput: { backgroundColor: Colors.background, borderRadius: 10, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: Colors.border },
+  activityChip: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 999, backgroundColor: Colors.background },
+  activityChipActive: { backgroundColor: Colors.primaryLight },
+  activityChipText: { fontWeight: '700' },
+  activityChipTextActive: { color: Colors.primary },
 });

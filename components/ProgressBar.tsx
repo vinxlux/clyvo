@@ -1,10 +1,10 @@
-// Componente ProgressBar — Barra de progresso animada
+// ProgressBar component — animated progress bar
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
 import { Colors } from '../constants/colors';
 
 interface ProgressBarProps {
-  percentual: number; // 0 a 100
+  percentual: number; // 0 to 100
   label?: string;
   cor?: string;
   height?: number;
@@ -16,7 +16,7 @@ export default function ProgressBar({
   cor = Colors.primary,
   height = 10,
 }: ProgressBarProps) {
-  // Animated.Value para animar a largura
+  // Animated.Value to animate the width
   const widthAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function ProgressBar({
     }).start();
   }, [percentual]);
 
-  // Interpolar o valor para porcentagem
+  // Interpolate the value to a percentage
   const animatedWidth = widthAnim.interpolate({
     inputRange: [0, 100],
     outputRange: ['0%', '100%'],

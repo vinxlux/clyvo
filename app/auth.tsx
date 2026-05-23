@@ -74,7 +74,7 @@ export default function AuthScreen() {
     }
   };
 
-  // deletar funções de limpeza removidas
+  // cleanup functions removed
 
   const handleShowUsers = async () => {
     try {

@@ -200,7 +200,7 @@ export default function WebShell() {
                 <TouchableOpacity
                   style={[styles.saveBtn, { backgroundColor: Colors.background, paddingVertical: 6 }]}
                   onPress={() => {
-                    // preencher formulário para edição inline
+                    // populate the inline edit form
                     setEditingId(p.id);
                     setShowForm(false);
                     setForm({ nome: p.nome, raca: p.raca, especie: p.especie, idade: String(p.idade || ''), peso: String(p.peso || ''), observacoes: p.observacoes || '' });

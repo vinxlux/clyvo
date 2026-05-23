@@ -1,4 +1,4 @@
-// Componente PetCard — Card de pet para a lista
+// PetCard component — pet card for the list
 import React from 'react';
 import {
   View,
@@ -16,7 +16,7 @@ interface PetCardProps {
   onPress: () => void;
 }
 
-// Calcula a idade do pet a partir da data de nascimento
+// Calculates the pet's age from the date of birth
 function calcularIdade(idade: number): string {
   if (!idade || idade <= 0) return 'Filhote';
   return `${idade} ano${idade > 1 ? 's' : ''}`;

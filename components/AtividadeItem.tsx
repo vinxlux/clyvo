@@ -1,4 +1,4 @@
-// Componente AtividadeItem — Item de atividade na lista
+// AtividadeItem component — activity item in the list
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,10 +8,11 @@ import { Atividade } from '../types';
 interface AtividadeItemProps {
   atividade: Atividade;
   onToggle: (id: string) => void;
+  onEdit?: (id: string) => void;
   petName?: string;
 }
 
-// Mapeia tipo para ícone e cor
+// Map activity type to icon and color
 function getIconeAtividade(tipo: Atividade['tipo']): { nome: string; cor: string } {
   switch (tipo) {
     case 'exercicio':
@@ -27,7 +28,7 @@ function getIconeAtividade(tipo: Atividade['tipo']): { nome: string; cor: string
   }
 }
 
-// Mapeia tipo para label
+// Map activity type to label
 function getLabelTipo(tipo: Atividade['tipo']): string {
   switch (tipo) {
     case 'exercicio': return 'Exercício';
@@ -38,7 +39,7 @@ function getLabelTipo(tipo: Atividade['tipo']): string {
   }
 }
 
-export default function AtividadeItem({ atividade, onToggle, petName }: AtividadeItemProps) {
+export default function AtividadeItem({ atividade, onToggle, onEdit, petName }: AtividadeItemProps) {
   const icone = getIconeAtividade(atividade.tipo);
 
   return (
@@ -60,6 +61,12 @@ export default function AtividadeItem({ atividade, onToggle, petName }: Atividad
           </Text>
         </View>
       </View>
+
+      {onEdit ? (
+        <TouchableOpacity style={styles.editBtn} onPress={() => onEdit(atividade.id)} activeOpacity={0.7}>
+          <Ionicons name="create-outline" size={20} color={Colors.primary} />
+        </TouchableOpacity>
+      ) : null}
 
       <TouchableOpacity
         style={[styles.checkBtn, atividade.concluida && styles.checkBtnConcluido]}
@@ -136,5 +143,11 @@ const styles = StyleSheet.create({
   },
   checkBtnConcluido: {
     transform: [{ scale: 1.1 }],
+  },
+  editBtn: {
+    padding: 8,
+    marginRight: 6,
+    borderRadius: 999,
+    backgroundColor: Colors.background,
   },
 });

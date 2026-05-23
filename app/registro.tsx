@@ -1,4 +1,4 @@
-// Tela de registro (cadastro de usuário)
+// User registration screen
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -58,11 +58,11 @@ export default function RegistroScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: Colors.background },
+  container: { flex: 1, justifyContent: 'flex-start', alignItems: 'center', paddingTop: 80, paddingHorizontal: 20, backgroundColor: Colors.background },
   title: { fontSize: 24, fontWeight: '700', marginBottom: 20, color: Colors.textPrimary },
   input: { width: '100%', backgroundColor: Colors.surface, padding: 12, borderRadius: 10, marginBottom: 12, borderWidth: 1, borderColor: Colors.border },
   btn: { backgroundColor: Colors.primary, padding: 12, borderRadius: 10, width: '100%', alignItems: 'center' },
-  btnText: { color: '#fff', fontWeight: '700' },
+  btnText: { color: '#ffffff', fontWeight: '700' },
   link: { marginTop: 12 },
   linkText: { color: Colors.primary, fontWeight: '600' },
 });

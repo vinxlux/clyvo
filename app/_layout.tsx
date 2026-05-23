@@ -13,17 +13,17 @@ export default function RootLayout() {
 
   React.useEffect(() => {
     (async () => {
-      // Verifica flag de login existente
+      // Check the existing login flag
       const flag = await AsyncStorage.getItem('@clyvo:loggedIn');
       const ok = flag === 'true';
       setAutenticado(ok);
     })();
   }, []);
 
-  // O layout condicional abaixo já escolhe qual pilha renderizar
+  // The conditional layout below already chooses which stack to render
 
   useEffect(() => {
-    // Inicializa dados mockados na primeira execução
+    // Initialize mock data on first run
     inicializarDados();
   }, []);
   if (autenticado === null) {
@@ -33,12 +33,12 @@ export default function RootLayout() {
       </View>
     );
   }
-  // Log no console o status de autenticação
+  // Log the authentication status to the console
   if (autenticado !== null) {
     console.log(autenticado ? '✅ Usuário já está logado' : '⚠️ Usuário não está logado – redirecionando para login');
   }
 
-  // Debug: botão para limpar login em modo desenvolvimento
+  // Debug button to clear the login flag in development mode
   const clearLogin = async () => {
     await AsyncStorage.removeItem('@clyvo:loggedIn');
     console.log('🗑️ Flag de login removida');

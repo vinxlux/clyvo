@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { salvarUsuario, buscarUsuario } from '../storage/storage';
 import { Colors } from '../constants/colors';
@@ -9,14 +9,51 @@ export default function NativeRegister({ onRegistered, onCancel }: { onRegistere
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
+  function validateInputs() {
+    const trimmedNome = nome.trim();
+    const trimmedEmail = email.trim();
+    const trimmedSenha = senha.trim();
+
+    if (!trimmedNome) {
+      Alert.alert('Erro', 'Nome é obrigatório');
+      return false;
+    }
+
+    if (!trimmedEmail) {
+      Alert.alert('Erro', 'Email é obrigatório');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      Alert.alert('Erro', 'Email inválido');
+      return false;
+    }
+
+    if (!trimmedSenha) {
+      Alert.alert('Erro', 'Senha é obrigatória');
+      return false;
+    }
+
+    if (trimmedSenha.length < 6) {
+      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
+      return false;
+    }
+
+    return true;
+  }
+
   async function doRegister() {
-    if (!email || !senha) return Alert.alert('Erro', 'Preencha email e senha');
+    if (!validateInputs()) {
+      return;
+    }
+
     try {
-      const existente = await buscarUsuario(email);
+      const existente = await buscarUsuario(email.trim());
       if (existente) return Alert.alert('Erro', 'Já existe usuário com esse email');
-      await salvarUsuario({ nome: nome || email.split('@')[0], email, senha });
+      await salvarUsuario({ nome: nome.trim(), email: email.trim(), senha: senha.trim() });
       await AsyncStorage.setItem('@clyvo:loggedIn', 'true');
-      await AsyncStorage.setItem('@clyvo:userEmail', email);
+      await AsyncStorage.setItem('@clyvo:userEmail', email.trim());
       onRegistered();
     } catch (e) {
       Alert.alert('Erro', 'Falha ao registrar');
@@ -24,7 +61,7 @@ export default function NativeRegister({ onRegistered, onCancel }: { onRegistere
   }
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <View style={styles.container}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <TouchableOpacity onPress={onCancel} style={{ padding: 8 }}>
           <Text style={{ color: Colors.primary, fontWeight: '700' }}>Voltar</Text>
@@ -45,6 +82,13 @@ export default function NativeRegister({ onRegistered, onCancel }: { onRegistere
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'android' ? 72 : 24,
+    paddingBottom: 16,
+    justifyContent: 'flex-start',
+  },
   input: { width: '100%', backgroundColor: Colors.surface, padding: 12, borderRadius: 10, marginBottom: 12, borderWidth: 1, borderColor: Colors.border },
   btn: { backgroundColor: Colors.primary, padding: 12, borderRadius: 10, width: '100%', alignItems: 'center' },
 });

@@ -1,4 +1,4 @@
-// Componente BarChart — Gráfico de barras semanal feito com Views
+// BarChart component — weekly bar chart built with Views
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
 import { Colors } from '../constants/colors';
@@ -12,7 +12,7 @@ interface BarChartProps {
 
 const DIAS_PADRAO = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
-// Componente de barra individual animada
+// Individual animated bar component
 function BarraAnimada({ valor, maxValue, maxHeight, cor, delay }: {
   valor: number;
   maxValue: number;
@@ -50,7 +50,7 @@ export default function BarChart({
   maxHeight = 120,
   cor = Colors.primary,
 }: BarChartProps) {
-  // Altura proporcional ao valor máximo da semana
+  // Height proportional to the maximum value of the week
   const maxValue = Math.max(...dados, 1);
 
   return (

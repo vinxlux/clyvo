@@ -1,4 +1,4 @@
-// Componente PetPreviewCard — Preview em tempo real do formulário de cadastro
+// PetPreviewCard component — real-time preview of the pet registration form
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -78,20 +78,20 @@ export default function PetPreviewCard({ data }: PetPreviewCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.surface,
-    borderRadius: 20,
-    padding: 18,
-    marginTop: 20,
+    borderRadius: 16,
+    padding: 14,
+    marginTop: 10,
     borderWidth: 2,
     borderColor: Colors.primary,
     borderStyle: 'dashed',
     boxShadow: '0px 4px 12px rgba(108,99,255,0.1)',
-    elevation: 4,
+    elevation: 3,
   },
   emptyCard: {
     backgroundColor: Colors.surface,
-    borderRadius: 20,
-    padding: 30,
-    marginTop: 20,
+    borderRadius: 16,
+    padding: 20,
+    marginTop: 10,
     borderWidth: 2,
     borderColor: Colors.border,
     borderStyle: 'dashed',
@@ -107,29 +107,29 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 10,
   },
   avatarPlaceholder: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerInfo: {
-    marginLeft: 14,
+    marginLeft: 12,
     flex: 1,
   },
   nome: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: Colors.textPrimary,
   },
   raca: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.textSecondary,
-    marginTop: 2,
+    marginTop: 1,
   },
   detalhes: {
     gap: 8,
@@ -137,28 +137,28 @@ const styles = StyleSheet.create({
   detalheItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
     backgroundColor: Colors.background,
     borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
   detalheLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: Colors.textSecondary,
     fontWeight: '600',
   },
   detalheValue: {
-    fontSize: 13,
+    fontSize: 12,
     color: Colors.textPrimary,
     fontWeight: '600',
     marginLeft: 'auto',
   },
   obsContainer: {
-    marginTop: 12,
+    marginTop: 10,
     backgroundColor: Colors.background,
     borderRadius: 12,
-    padding: 12,
+    padding: 10,
   },
   obsLabel: {
     fontSize: 12,

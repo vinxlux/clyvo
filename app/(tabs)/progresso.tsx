@@ -6,18 +6,18 @@ import MetricCard from '../../components/MetricCard';
 import BarChart from '../../components/BarChart';
 import ProgressBar from '../../components/ProgressBar';
 
-// Dados mockados de métricas da semana
+// Mocked weekly metric data
 const metricData = [
   { titulo: 'Dias ativos', valor: '4', icone: 'calendar', cor: Colors.primary },
   { titulo: 'Atividades concluídas', valor: '12', icone: 'checkmark-circle', cor: Colors.success },
   { titulo: 'Metas batidas', valor: '3', icone: 'trophy', cor: Colors.accent },
 ];
 
-// Dados mockados para o gráfico de barras (peso ao longo da semana)
+// Mocked bar chart data (weight over the week)
 const barData = [28, 29, 28.5, 28, 27.8, 28.2, 28];
 const barDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
-// Badges mockados
+// Mocked badges
 const badges = [
   { id: '1', label: 'Primeira caminhada', icon: 'walk' },
   { id: '2', label: 'Meta de peso', icon: 'weight' },

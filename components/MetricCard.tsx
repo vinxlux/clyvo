@@ -1,4 +1,4 @@
-// Componente MetricCard — Card de métrica para a tela de progresso
+// MetricCard component — metric card for the progress screen
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
