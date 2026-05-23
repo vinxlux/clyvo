@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MetricCard from '../components/MetricCard';
 import PetPreviewCard from '../components/PetPreviewCard';
@@ -8,8 +10,10 @@ import { FormDataPet } from '../types';
 import { carregarPets, inicializarDados } from '../storage/storage';
 import { Pet } from '../types';
 import PetCard from '../components/PetCard';
+// removed programmatic redirect to avoid routing conflicts; auth handled by layout
 
 export default function Index() {
+  const router = useRouter();
   const [manage, setManage] = useState(false);
   const [pets, setPets] = useState<Pet[]>([]);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
@@ -17,13 +21,14 @@ export default function Index() {
     nome: 'Rex',
     raca: 'Labrador',
     especie: 'cachorro',
-    nascimento: '2020-01-01',
+    idade: '4',
     peso: '12',
     observacoes: 'Brincalhão e carinhoso',
   };
 
   useEffect(() => {
     (async () => {
+      // A navegação de autenticação é tratada no _layout.tsx
       await inicializarDados();
       const p = await carregarPets();
       setPets(p);
@@ -59,7 +64,7 @@ export default function Index() {
                   nome: selectedPet.nome,
                   raca: selectedPet.raca,
                   especie: selectedPet.especie,
-                  nascimento: selectedPet.nascimento,
+                  idade: String(selectedPet.idade),
                   peso: String(selectedPet.peso),
                   observacoes: selectedPet.observacoes || '',
                 }}

@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { Platform } from 'react-native';
 import { Colors } from '../constants/colors';
-import { salvarUsuario } from '../storage/storage';
+import { salvarUsuario, buscarUsuario } from '../storage/storage';
 
 export default function RegistroScreen() {
   const [nome, setNome] = useState('');
@@ -18,11 +19,24 @@ export default function RegistroScreen() {
       return;
     }
     try {
+      console.log('Registro: tentando cadastrar', { nome, email });
+      const existente = await buscarUsuario(email);
+      if (existente) {
+        Alert.alert('Erro', 'Já existe usuário com esse email');
+        return;
+      }
       await salvarUsuario({ nome, email, senha });
+      console.log('Registro: cadastro realizado com sucesso para', email);
       await AsyncStorage.setItem('@clyvo:loggedIn', 'true');
       await AsyncStorage.setItem('@clyvo:userEmail', email);
-      router.replace('/(tabs)');
+      if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location) {
+        // when expo-router context isn't available on web fallback, force reload
+        window.location.reload();
+      } else {
+        router.replace('/(tabs)');
+      }
     } catch (e) {
+      console.error('Registro: erro ao cadastrar', e);
       Alert.alert('Erro', 'Não foi possível registrar');
     }
   };

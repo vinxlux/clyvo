@@ -8,7 +8,7 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import { carregarPets, adicionarPet, excluirPet } from '../storage/storage';
+import { carregarPets, adicionarPet, excluirPet, getFotoPorEspecie } from '../storage/storage';
 import { Pet } from '../types';
 import PetCard from './PetCard';
 import { Colors } from '../constants/colors';
@@ -38,9 +38,9 @@ export default function PetsManager() {
       nome: nome.trim(),
       raca: raca || 'Raça desconhecida',
       especie,
-      nascimento: new Date().toISOString().split('T')[0],
+      idade: 1,
       peso: 1,
-      foto: 'https://placedog.net/300/300',
+      foto: getFotoPorEspecie(especie),
       observacoes: '',
     };
     await adicionarPet(novo);

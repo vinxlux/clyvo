@@ -5,7 +5,7 @@ export interface Pet {
   nome: string;
   raca: string;
   especie: 'cachorro' | 'gato';
-  nascimento: string;
+  idade: number; // idade em anos
   peso: number;
   foto: string;
   observacoes: string;
@@ -23,7 +23,9 @@ export interface Atividade {
 
 export interface Usuario {
   nome: string;
-  petPrincipalId: string;
+  // Identificadores de pet principal por espécie (opcionais)
+  petPrincipalCachorroId?: string;
+  petPrincipalGatoId?: string;
 }
 
 // Tipo para os dados do formulário de cadastro
@@ -31,7 +33,7 @@ export interface FormDataPet {
   nome: string;
   raca: string;
   especie: 'cachorro' | 'gato';
-  nascimento: string;
+  idade: string; // campo de texto no formulário, convertido para number ao salvar
   peso: string;
   observacoes: string;
 }

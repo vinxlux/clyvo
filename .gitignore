@@ -3,9 +3,11 @@
 # Bases
 aulas/
 leia.txt
-prompt.md
+Prompt.md
 .claude
 .gitignore
+.github/
+
 
 # dependencies
 node_modules/

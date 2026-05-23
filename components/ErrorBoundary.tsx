@@ -16,14 +16,26 @@ export default class ErrorBoundary extends React.Component<React.PropsWithChildr
   componentDidCatch(error: Error) {
     // You can log the error to an error reporting service here
     // console.error(error);
+    // If this is the known expo-router web issue, mark it so App can render a web fallback
+    try {
+      if (Platform.OS === 'web' && typeof window !== 'undefined' && error?.message?.includes('contextModule')) {
+        try {
+          window.localStorage.setItem('@clyvo:expoRouterFailed', 'true');
+        } catch {
+          // ignore
+        }
+      }
+    } catch {
+      // ignore
+    }
     this.setState({ error });
   }
 
   handleReload = () => {
     if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location) {
       window.location.reload();
-    } else if ((global as any).Expo && (global as any).Expo.Updates && (global as any).Expo.Updates.reloadAsync) {
-      (global as any).Expo.Updates.reloadAsync();
+    } else if ((globalThis as any).Expo && (globalThis as any).Expo.Updates && (globalThis as any).Expo.Updates.reloadAsync) {
+      (globalThis as any).Expo.Updates.reloadAsync();
     } else {
       // As a fallback, try to throw to let dev tools catch it
       console.log('Please reload the app');
@@ -32,6 +44,19 @@ export default class ErrorBoundary extends React.Component<React.PropsWithChildr
 
   render() {
     if (this.state.hasError) {
+      // If this is the known expo-router web issue where contextModule is undefined,
+      // render the Auth screen as a safe fallback so the user can still log in.
+      if (Platform.OS === 'web' && this.state.error?.message?.includes('contextModule')) {
+        try {
+          // require the auth screen directly to avoid router dependency
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const AuthScreen = require('../app/auth').default;
+          return React.createElement(AuthScreen);
+        } catch {
+          // fallthrough to generic error UI
+        }
+      }
+
       return (
         <View style={styles.container}>
           <Text style={styles.title}>Ocorreu um erro inesperado</Text>

@@ -48,11 +48,11 @@ export default function PetPreviewCard({ data }: PetPreviewCardProps) {
           </Text>
         </View>
 
-        {data.nascimento ? (
+        {data.idade ? (
           <View style={styles.detalheItem}>
             <Ionicons name="calendar" size={16} color={Colors.secondary} />
-            <Text style={styles.detalheLabel}>Nascimento</Text>
-            <Text style={styles.detalheValue}>{data.nascimento}</Text>
+            <Text style={styles.detalheLabel}>Idade</Text>
+            <Text style={styles.detalheValue}>{data.idade} ano{Number(data.idade) > 1 ? 's' : ''}</Text>
           </View>
         ) : null}
 
@@ -84,11 +84,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.primary,
     borderStyle: 'dashed',
-    // Sombra
-    shadowColor: '#6C63FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
+    boxShadow: '0px 4px 12px rgba(108,99,255,0.1)',
     elevation: 4,
   },
   emptyCard: {

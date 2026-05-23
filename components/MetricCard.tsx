@@ -38,10 +38,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 16,
     alignItems: 'center',
-    shadowColor: '#6C63FF',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
+    boxShadow: '0px 3px 10px rgba(108,99,255,0.07)',
     elevation: 3,
   },
   iconContainer: {

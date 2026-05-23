@@ -1,10 +1,11 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
+import { Colors } from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: Colors.primary, tabBarInactiveTintColor: Colors.textSecondary, tabBarStyle: { backgroundColor: Colors.background, borderTopWidth: 0 }, tabBarLabelStyle: { fontSize: 12, marginBottom: 4 } }}>
       <Tabs.Screen
         name="index"
         options={{

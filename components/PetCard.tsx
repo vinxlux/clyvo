@@ -17,15 +17,9 @@ interface PetCardProps {
 }
 
 // Calcula a idade do pet a partir da data de nascimento
-function calcularIdade(nascimento: string): string {
-  const hoje = new Date();
-  const nasc = new Date(nascimento);
-  let anos = hoje.getFullYear() - nasc.getFullYear();
-  const meses = hoje.getMonth() - nasc.getMonth();
-  if (meses < 0 || (meses === 0 && hoje.getDate() < nasc.getDate())) {
-    anos--;
-  }
-  return anos <= 0 ? 'Filhote' : `${anos} ano${anos > 1 ? 's' : ''}`;
+function calcularIdade(idade: number): string {
+  if (!idade || idade <= 0) return 'Filhote';
+  return `${idade} ano${idade > 1 ? 's' : ''}`;
 }
 
 export default function PetCard({ pet, onPress }: PetCardProps) {
@@ -35,7 +29,7 @@ export default function PetCard({ pet, onPress }: PetCardProps) {
       <View style={styles.info}>
         <Text style={styles.nome}>{pet.nome}</Text>
         <Text style={styles.raca}>
-          {pet.raca} · {calcularIdade(pet.nascimento)}
+          {pet.raca} · {calcularIdade(pet.idade)}
         </Text>
         <View style={styles.badge}>
           <Ionicons
@@ -63,12 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 14,
     marginBottom: 12,
-    // Sombra iOS
-    shadowColor: '#6C63FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    // Sombra Android
+    boxShadow: '0px 4px 12px rgba(108,99,255,0.08)',
     elevation: 4,
   },
   avatar: {

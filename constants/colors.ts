@@ -1,19 +1,20 @@
 // Paleta de cores do app Clyvo
 export const Colors = {
-  primary: '#6C63FF',       // Roxo vibrante
-  primaryLight: '#8B83FF',  // Roxo claro
-  primaryDark: '#5A52E0',   // Roxo escuro
-  secondary: '#FF6584',     // Rosa/coral
-  secondaryLight: '#FF8FA3',
-  accent: '#43C6AC',        // Verde-água
-  accentLight: '#6DD5C0',
-  background: '#F8F7FF',    // Fundo geral
+  // Paleta aproximada baseada no site Clyvo
+  primary: '#0066CC',       // azul principal
+  primaryLight: '#3D85FF',  // azul claro
+  primaryDark: '#004B99',   // azul escuro
+  secondary: '#00B894',     // verde vibrante
+  secondaryLight: '#66E2B6',
+  accent: '#FF8A65',        // coral/laranja suave
+  accentLight: '#FFB59A',
+  background: '#F6FAFF',    // Fundo geral claro
   surface: '#FFFFFF',       // Superfície dos cards
-  textPrimary: '#2D2D2D',   // Texto principal
-  textSecondary: '#7B7B8E', // Texto secundário
-  border: '#E8E6F0',        // Bordas
-  success: '#4CAF50',       // Sucesso / concluído
+  textPrimary: '#0B2D4A',   // Texto principal escuro
+  textSecondary: '#6B7280', // Texto secundário
+  border: '#E6EEF8',        // Bordas suaves
+  success: '#28A745',       // Sucesso / concluído
   warning: '#FFC107',       // Alerta / pendente
-  error: '#F44336',         // Erro
-  overlay: 'rgba(0,0,0,0.4)', // Overlay para gradientes
+  error: '#E03131',         // Erro
+  overlay: 'rgba(11,45,74,0.5)', // Overlay para gradientes
 };

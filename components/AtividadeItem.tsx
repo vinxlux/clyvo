@@ -8,6 +8,7 @@ import { Atividade } from '../types';
 interface AtividadeItemProps {
   atividade: Atividade;
   onToggle: (id: string) => void;
+  petName?: string;
 }
 
 // Mapeia tipo para ícone e cor
@@ -37,7 +38,7 @@ function getLabelTipo(tipo: Atividade['tipo']): string {
   }
 }
 
-export default function AtividadeItem({ atividade, onToggle }: AtividadeItemProps) {
+export default function AtividadeItem({ atividade, onToggle, petName }: AtividadeItemProps) {
   const icone = getIconeAtividade(atividade.tipo);
 
   return (
@@ -50,6 +51,7 @@ export default function AtividadeItem({ atividade, onToggle }: AtividadeItemProp
         <Text style={[styles.titulo, atividade.concluida && styles.tituloConcluido]}>
           {atividade.titulo}
         </Text>
+        {petName ? <Text style={{ fontSize: 12, color: Colors.textSecondary, marginTop: 4 }}>{petName}</Text> : null}
         <View style={styles.metaRow}>
           <Text style={styles.tipo}>{getLabelTipo(atividade.tipo)}</Text>
           <Text style={styles.horario}>
@@ -82,10 +84,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 14,
     marginBottom: 10,
-    shadowColor: '#6C63FF',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
+    boxShadow: '0px 2px 8px rgba(108,99,255,0.06)',
     elevation: 3,
   },
   cardConcluida: {
