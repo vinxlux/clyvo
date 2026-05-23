@@ -6,6 +6,10 @@ import { useEffect } from 'react';
 import { inicializarDados } from '../storage/storage';
 
 export default function RootLayout() {
+  useEffect(() => {
+    // Inicializa dados mockados na primeira execução
+    inicializarDados();
+  }, []);
   return (
     <ErrorBoundary>
       {/* Stack raiz — grupos e telas filhas serão resolvidas pelo expo-router */}
