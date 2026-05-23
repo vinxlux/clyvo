@@ -1,5 +1,11 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# Bases
+aulas/
+leia.txt
+prompt.md
+
+
 # dependencies
 node_modules/
 

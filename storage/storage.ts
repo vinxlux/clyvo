@@ -146,6 +146,19 @@ export async function adicionarPet(pet: Pet): Promise<void> {
   }
 }
 
+// Excluir pet por ID
+export async function excluirPet(id: string): Promise<Pet[]> {
+  try {
+    const pets = await carregarPets();
+    const novos = pets.filter(p => p.id !== id);
+    await salvarPets(novos);
+    return novos;
+  } catch (error) {
+    console.error('Erro ao excluir pet:', error);
+    return [];
+  }
+}
+
 // Buscar pet por ID
 export async function buscarPetPorId(id: string): Promise<Pet | null> {
   try {

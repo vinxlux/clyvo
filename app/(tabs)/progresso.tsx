@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function Atividades() {
+export default function Progresso() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Atividades (a implementar)</Text>
+      <Text style={styles.title}>Progresso (a implementar)</Text>
     </View>
   );
 }
