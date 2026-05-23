@@ -222,6 +222,40 @@ export async function adicionarAtividade(atividade: Atividade): Promise<void> {
 // ==================== USUARIO ====================
 
 // Carregar usuário
+// ---- AUTH USER HANDLING ----
+export interface AuthUser {
+  nome: string;
+  email: string;
+  senha: string;
+}
+
+const USERS_KEY = '@clyvo:users';
+
+export async function salvarUsuario(usuario: AuthUser): Promise<void> {
+  try {
+    const existentes = await AsyncStorage.getItem(USERS_KEY);
+    const usuarios: AuthUser[] = existentes ? JSON.parse(existentes) : [];
+    usuarios.push(usuario);
+    await AsyncStorage.setItem(USERS_KEY, JSON.stringify(usuarios));
+  } catch (error) {
+    console.error('Erro ao salvar usuário:', error);
+  }
+}
+
+export async function buscarUsuario(email: string): Promise<AuthUser | null> {
+  try {
+    const dados = await AsyncStorage.getItem(USERS_KEY);
+    if (!dados) return null;
+    const usuarios: AuthUser[] = JSON.parse(dados);
+    return usuarios.find(u => u.email === email) || null;
+  } catch (error) {
+    console.error('Erro ao buscar usuário:', error);
+    return null;
+  }
+}
+
+// ---- END AUTH ----
+
 export async function carregarUsuario(): Promise<Usuario> {
   try {
     const dados = await AsyncStorage.getItem(KEYS.USUARIO);

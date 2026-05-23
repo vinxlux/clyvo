@@ -4,7 +4,8 @@
 aulas/
 leia.txt
 prompt.md
-
+.claude
+.gitignore
 
 # dependencies
 node_modules/
